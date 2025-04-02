@@ -10,6 +10,11 @@ app.use(bodyParser.json());
 
 const { YOOKASSA_SHOP_ID, YOOKASSA_SECRET, RETURN_URL, WEBHOOK_SECRET } = process.env;
 
+// ✅ Проверка работы сервера
+app.get('/', (req, res) => {
+	res.send('✅ Сервер работает нормально!');
+});
+
 // ✅ API для создания платежа
 app.post('/api/create-payment', async (req, res) => {
 	const { orderId, amount } = req.body;
@@ -48,4 +53,5 @@ app.post('/api/payment-webhook', async (req, res) => {
 });
 
 // Запуск сервера
-app.listen(3000, () => console.log('🚀 Сервер запущен на порту 3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Сервер запущен на порту ${PORT}`));
