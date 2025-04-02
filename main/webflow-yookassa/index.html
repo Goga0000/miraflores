@@ -1,14 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>ЮKassa + Webflow</title>
+	<script defer src="index.js"></script>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			text-align: center;
+			margin: 50px;
+		}
+
+		input,
+		button {
+			margin: 10px;
+			padding: 10px;
+			font-size: 16px;
+		}
+	</style>
 </head>
 
 <body>
+	<h1>Тестирование платежей ЮKassa</h1>
+	<p id="status">Проверяем соединение с сервером...</p>
 
+	<h2>Создать платеж</h2>
+	<input type="text" id="orderId" placeholder="Номер заказа" value="123">
+	<input type="number" id="amount" placeholder="Сумма (RUB)" value="500">
+	<button onclick="createPayment()">Оплатить</button>
+
+	<script>
+		// Проверяем статус сервера
+		fetch('/')
+			.then(response => response.text())
+			.then(data => document.getElementById('status').innerText = data)
+			.catch(() => document.getElementById('status').innerText = '❌ Сервер не отвечает');
+
+		// Функция для создания платежа
+		function createPayment() {
+			const orderId = document.getElementById('orderId').value;
+			const amount = document.getElementById('amount').value;
+
+			fetch('/api/create-payment', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ orderId, amount })
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.confirmation_url) {
+						window.location.href = data.confirmation_url;
+					} else {
+						alert('Ошибка при создании платежа');
+					}
+				})
+				.catch(error => console.error('Ошибка:', error));
+		}
+	</script>
 </body>
 
 </html>
